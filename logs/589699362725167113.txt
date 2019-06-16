@@ -1,0 +1,8 @@
+Welcome to #ticket-25! Reason: testing
+Odyssey#0306: Welcome to your private ticket Nite Please wait until we assist you further!
+Nite#0001: -new testing more of this
+Odyssey#0306: Your ticket has been created View it in <#589699764883423242>
+Nite#0001: no
+Nite#0001: stop
+Nite#0001: -ticket close
+Closed by Nite#0001 with reason: No given reason.

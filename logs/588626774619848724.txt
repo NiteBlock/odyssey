@@ -1,0 +1,37 @@
+Welcome to #ticket-9!
+Odyssey#0306: Welcome to your private ticket Nite
+Nite#0001: -new
+Nite#0001: -eval
+x = f"Welcome to #{ctx.channel.name}!"
+async for m in ctx.channel.history(limit=1000000):
+    if m.content == "" or m.content == None:
+        try:
+            x = f"{x}\n{m.embeds[0].title}"
+        except:
+            pass
+    x = f"{x}\n{m.content}"
+print(x)
+Odyssey#0306: :white_check_mark: Finished evaluation code!
+Nite#0001: -eval
+x = f"Welcome to #{ctx.channel.name}!"
+async for m in ctx.channel.history(limit=1000000):
+    if m.content == "" or m.content == None:
+        try:
+            x = f"{x}\n{m.embeds[0].title}"
+        except:
+            pass
+    x = f"{x}\n{m.content}"
+print(x)
+Odyssey#0306: :white_check_mark: Finished evaluation code!
+Nite#0001: -eval
+x = f"Welcome to #{ctx.channel.name}!"
+async for m in ctx.channel.history(limit=1000000, oldest_first=True):
+    if m.content == "" or m.content == None:
+        try:
+            x = f"{x}\n{m.embeds[0].title}"
+        except:
+            pass
+    x = f"{x}\n{m.content}"
+print(x)
+Odyssey#0306: :white_check_mark: Finished evaluation code!
+Cortin#1688: -ticket close Done.

@@ -1,0 +1,11 @@
+Welcome to #ticket-24! Reason: No given reason
+Odyssey#0306: Welcome to your private ticket Nite Please wait until we assist you further!
+Nite#0001: o forgot to bold it
+Nite#0001: and it doesnt work why?
+Nite#0001: -new testing
+Odyssey#0306: Your ticket has been created View it in <#589699362725167113>
+Nite#0001: -ticket
+Nite#0001: -ticket
+Odyssey#0306: Invalid usage! Please use a subcommand or `-new` to create a ticket
+Nite#0001: -ticket close
+Closed by Nite#0001 with reason: No given reason.
