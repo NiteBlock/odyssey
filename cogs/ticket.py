@@ -5,6 +5,22 @@ import json, asyncio
 from datetime import datetime as dt
 dbclient = pymongo.MongoClient("mongodb://localhost:27017/")
 
+
+class commission_info():
+    def __init__(self, title, description, timeframe, ctype, budget = None):
+        
+        self.name = title
+        self.d = description
+        self.time = timeframe
+        self.type = ctype
+        if ctype == "b":
+            self.b = budget
+    @classmethod
+    def description(self):
+        return self.d
+
+
+
 class Ticket(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -343,12 +359,14 @@ class Ticket(commands.Cog):
     
         timeframe = await self.bot.wait_for("message", check=check)
         def check2(r, u):
-            return r.message.id == m.id and u.id == user.id and (str(r.emoji) == "💰" or str(r.emoji) == "❓")
+            return r.message.id == m.id and u.id == author.id and (str(r.emoji) == "💰" or str(r.emoji) == "❓")
         m = await channel.send(embed=discord.Embed(title="Budget and Quotes", description="Choose an option below to allow quotes or freelancers to come to your ticket:\n\n**💰 Set a budget**\n\n**❓ Ask our freelancers**"))
     
         r, u = await self.bot.wait_for("reaction_add", check=check2)
         if str(r.emoji) == "💰":
             await self.post_commission()
+        elif str(r.emoji) == "❓":
+            await self.post_quote()
         return
 
 
