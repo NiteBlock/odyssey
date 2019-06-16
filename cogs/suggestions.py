@@ -9,6 +9,9 @@ class suggestions(commands.Cog):
     async def on_message(self, message):
         if message.channel.id == 589714893503070219 and not message.author.bot:
             await message.delete()
-            m = await message.channel.send(embed=discord.Embed(title=message.content, timestamp = dt.utcnow(), colour=discord.Colour.green()).set_footer(f"Sent by {message.author}"))
+            m = await message.channel.send(embed=discord.Embed(title=message.content, timestamp = dt.utcnow(), colour=discord.Colour.green()).set_footer(text=f"Sent by {message.author}"))
             await m.add_reaction("👍")
             await m.add_reaction("👎")
+
+def setup(bot):
+    bot.add_cog(suggestions(bot))

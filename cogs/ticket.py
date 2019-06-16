@@ -15,9 +15,8 @@ class commission_info():
         self.type = ctype
         if ctype == "b":
             self.b = budget
-    @classmethod
-    def description(self):
-        return self.d
+
+            
 
 
 
@@ -206,69 +205,82 @@ class Ticket(commands.Cog):
         db = dbclient["o-ticket-data"]
         ticket = ctx.channel
         if str(ticket.id) in db.list_collection_names():
+        
 
             col = db[str(ticket.id)]
             d = col.find_one()
             col.delete_many({})
-            data = {
-                "user":d["user"],
-                "ticket": d["ticket"],
-                "cat": d["cat"],
-                "reason" : d["reason"],
-                "closed" : True
-            }
-            db = dbclient["o-ticket-data"]
-            col = db[str(ticket.id)]
-            col.insert_one(data)
+            if d["status"] == 0:
+                
+                data = {
+                    "user":d["user"],
+                    "ticket": d["ticket"],
+                    "cat": d["cat"],
+                    "reason" : d["reason"],
+                    "status" : d["status"],
+                    "closed" : True
+                }
+                db = dbclient["o-ticket-data"]
+                col = db[str(ticket.id)]
+                col.insert_one(data)
 
-            col = db[str(ticket.name)]
-            col.insert_one(data)
-            x = db[str(ctx.channel.id)]
-            d = x.find_one()
-            c = self.bot.get_channel(d["ticket"])
-            u = ctx.guild.get_member(d["user"])
-            cat = d["cat"]
-            cname = cat["name"]
-            cdesc = cat["desc"]
-            cemoji = cat["emoji"] 
-            o = 0
-            reason = d["reason"]
-            x = f"Welcome to #{ticket.name}! Reason: {reason}"
-            async for m in ctx.channel.history(limit=1000000, oldest_first=True):
-                if m.content == "" or m.content == None:
-                    try:
-                        x = f"{x}\n{m.author}: {m.embeds[0].title}"
+                col = db[str(ticket.name)]
+                col.insert_one(data)
+                x = db[str(ctx.channel.id)]
+                d = x.find_one()
+                c = self.bot.get_channel(d["ticket"])
+                u = ctx.guild.get_member(d["user"])
+                cat = d["cat"]
+                cname = cat["name"]
+                cdesc = cat["desc"]
+                cemoji = cat["emoji"] 
+                o = 0
+                reason = d["reason"]
+                x = f"Welcome to #{ticket.name}! Reason: {reason}"
+                async for m in ctx.channel.history(limit=1000000, oldest_first=True):
+                    if m.content == "" or m.content == None:
                         try:
-                            x = f"{x} {m.embeds[0].description}"
+                            x = f"{x}\n{m.author}: {m.embeds[0].title}"
                             try:
-                                x = f"{x} {m.embeds[0].feilds[0].name}"
-                                x = f"{x} {m.embeds[0].feilds[0].value}"
+                                x = f"{x} {m.embeds[0].description}"
+                                try:
+                                    x = f"{x} {m.embeds[0].feilds[0].name}"
+                                    x = f"{x} {m.embeds[0].feilds[0].value}"
+                                except:
+                                    pass
                             except:
                                 pass
                         except:
                             pass
-                    except:
-                        pass
-                else:
-                    x = f"{x}\n{m.author}: {m.content}"
-                o += 1
-            
-            embed = discord.Embed(title="Ticket closed", colour=discord.Colour.red())
-            embed.add_field(name="Ticket:", value=f"{ctx.channel.name} ({ctx.channel.id})")
-            embed.add_field(name="Closed by:", value=f"{ctx.author.mention} ({ctx.author.id})")
-            embed.add_field(name="Reason:", value=f"{reason}")
-            embed.add_field(name="Messages sent:", value=f"{o} messages.")
-            embed.add_field(name="Ticket owner:", value=f"{u.mention} ({u.id})")
-            embed.add_field(name="Close reason:", value=f"{r}")
+                    else:
+                        x = f"{x}\n{m.author}: {m.content}"
+                    o += 1
+                await ctx.author.send(embed=discord.Embed(title="Ticket closed!", description="The ticket has been closed!"), file=discord.File(f"./logs/{ticket.id}.txt"))
+                if not ctx.author.id == d["user"]:
+                    await u.send(embed=discord.Embed(title="Ticket closed!", description="Your ticket has been closed!"), file=discord.File(f"./logs/{ticket.id}.txt"))
+                embed = discord.Embed(title="Ticket closed", colour=discord.Colour.red())
+                embed.add_field(name="Ticket:", value=f"{ctx.channel.name} ({ctx.channel.id})")
+                embed.add_field(name="Closed by:", value=f"{ctx.author.mention} ({ctx.author.id})")
+                embed.add_field(name="Reason:", value=f"{reason}")
+                embed.add_field(name="Messages sent:", value=f"{o} messages.")
+                embed.add_field(name="Ticket owner:", value=f"{u.mention} ({u.id})")
+                embed.add_field(name="Close reason:", value=f"{r}")
 
-            await self.bot.get_channel(self.c["log-channel"]).send(embed=embed)
-            x = f"{x}\nClosed by {ctx.author} with reason: {r}"
-            f = open(f"./logs/{ctx.channel.id}.txt", "w")
-            f.write(str(x))
-            f.close()
+                await self.bot.get_channel(self.c["log-channel"]).send(embed=embed)
+                x = f"{x}\nClosed by {ctx.author} with reason: {r}"
+                f = open(f"./logs/{ctx.channel.id}.txt", "w")
+                f.write(str(x))
+                f.close()
 
-            await self.bot.get_channel(self.c["log-channel"]).send(file=discord.File(fp=f"./logs/{ctx.channel.id}.txt"))
-            await ctx.channel.delete()
+                await self.bot.get_channel(self.c["log-channel"]).send(file=discord.File(fp=f"./logs/{ctx.channel.id}.txt"))
+                await ctx.channel.delete()
+            elif d["status"] == 2:
+                m = await ctx.send(embed=discord.Embed(title="What should we close your ticket as?", description="Choose one of the options below: \n\n**❎ Mid-Completed/Canceled**\n\n**✅ Completed/Finished**"))
+                await m.add_reaction("❎")
+                await m.add_reaction("✅")
+                def check(r, u):
+                    return(str(r.emoji()) == "✅" or str(r.emoji()) == "❎") and r.message.id == m.id 
+                r, u = await self.bot.wait_for("reaction_add", check=check)
         else:
             await ctx.send(embed=discord.Embed(title="Not a ticket", description="This is not a ticket", colour=discord.Colour.red()))
     
@@ -345,8 +357,8 @@ class Ticket(commands.Cog):
         return r
 
 
-    async def get_commission_info(self, author, channel, ticket):
-        role = await self.get_role_by_reaction(channel, author, "Choose a category for this ticket", "Please choose one of the options bellow to let your commission be posted!")
+    async def make_commission(self, author, channel, ticket):
+        role = await self.get_role_by_reaction(author, channel, "Choose a category for this ticket", "Please choose one of the options bellow to let your commission be posted!")
         def check(m):
             return m.author == author and m.channel == channel
         await channel.send(embed=discord.Embed(title="What should the name of this ticket be?", description="A breif summary of what you need eg: Sheep Spawner Plugin"))
@@ -376,8 +388,7 @@ class Ticket(commands.Cog):
         db = dbclient["o-ticket-data"]
         if str(ticket.id) in db.list_collection_names():
             data = self.get_ticket_info(ticket)
-            await self.get_commission_info(ctx.author, ctx.channel, ticket)
-            await self.post_commission(ticket)
+            await self.make_commission(ctx.author, ctx.channel, ticket)
         else:
             await ctx.send(embed=discord.Embed(title="Invalid Ticket", description="The specified channel is not a ticket."))
 

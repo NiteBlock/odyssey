@@ -2,11 +2,11 @@ import discord
 from discord.ext import commands
 from datetime import datetime as dt
 import os
-import json
+from ast import literal_eval
 
 def getconfig():
     f = open("./config.json")
-    data = json.loads(f.read())
+    data = literal_eval(f.read())
     f.close()
     return data
 
